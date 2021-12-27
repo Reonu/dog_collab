@@ -863,6 +863,7 @@ s32 update_radial_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
 /**
  * Update the camera during 8 directional mode
  */
+
 s32 update_8_directions_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     s16 camYaw = s8DirModeBaseYaw + s8DirModeYawOffset;
     s16 pitch = look_down_slopes(camYaw);
@@ -870,11 +871,102 @@ s32 update_8_directions_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     f32 focusY;
     f32 yOff = 125.f;
     f32 baseDist = 1000.f;
+    if (gMarioState->floor != NULL) {
+        if (gMarioState->floor->type != SURFACE_NO_CAM_COLLISION && gMarioState->floor->type != SURFACE_SWITCH) {
+            gForce2 = gMarioState->floor->force;
+        }
+    }
+    //REONU CAMERA ANGLES START
+    if (gCurrLevelNum == LEVEL_SSL) {
+        if (gMarioState->floor != NULL) {
+            switch ((gForce2 >> 8) & 0xFF) {
+                    case 0x01:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(180), 0.2f);
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        break;
+                    case 0x02:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(270), 0.2f); // Rotate left
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        break;
+                    case 0x03:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(90), 0.2f); // Rotate right
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        break;
+                    case 0x04:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(0), 0.2f); // Backtracking camera
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        break;
+                    case 0x06:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(180), 0.2f); //2D camera, locked on Z
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        pitch = DEGREES(1);
+                        baseDist = 1500.0f;
+                        break;
+                    case 0x07:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(0), 0.2f); //Inverted 2D camera, locked on Z
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        baseDist = 1500.0f;
+                        break;
+                    case 0x08:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(90), 0.2f); //2D camera, locked on X
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        pitch = DEGREES(1);
+                        baseDist = 1500.0f;
+                        break;           
+                    case 0x09:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(270), 0.2f); //Inverted 2D camera, locked on X
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        baseDist = 1500.0f;
+                        pitch = DEGREES(1);
+                        break;  
+                    case 0x0A:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(180), 0.2f); //Top-down camera
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        pitch = DEGREES(50);
+                        baseDist = 2000.0f;
+                        break;
+                    case 0x0B:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(90), 0.2f); //Normal camera looking up
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        pitch = DEGREES(-55);
+                        baseDist = (3000.0f + ((gMarioState->pos[1] - -1750)/2));
+                        //print_text_fmt_int(10, 160, "%d", baseDist);
+                        break;
+                    case 0x0C:
+                        gCustomCameraMode = 0;
+                        break;
+                    case 0x0D:
+                        s8DirModeBaseYaw = approach_yaw(gLakituState.yaw, DEGREES(270), 0.2f); //Top-down camera (270º)
+                        gCustomCameraMode = 1;
+                        s8DirModeYawOffset = 0;
+                        pitch = DEGREES(50);
+                        baseDist = 2500.0f;
+                        break;
+                    default:
+                        pitch = look_down_slopes(camYaw);
+                        baseDist = 1000.0f;
+                        break;
+                    }      
+        }
+    }
+    //REONU CAMERA ANGLES END
+
 
     sAreaYaw = camYaw;
     calc_y_to_curr_floor(&posY, 1.f, 200.f, &focusY, 0.9f, 200.f);
     focus_on_mario(focus, pos, posY + yOff, focusY + yOff, sLakituDist + baseDist, pitch, camYaw);
     pan_ahead_of_player(c);
+
     if (gCurrLevelArea == AREA_DDD_SUB) {
         camYaw = clamp_positions_and_find_yaw(pos, focus, 6839.f, 995.f, 5994.f, -3945.f);
     }
@@ -5617,11 +5709,7 @@ struct CameraTrigger sCamHMC[] = {
  * radial.
  */
 struct CameraTrigger sCamSSL[] = {
-    { 1, cam_ssl_enter_pyramid_top, -2048, 1080, -1024, 150, 150, 150, 0 },
-    { 2, cam_ssl_pyramid_center, 0, -104, -104, 1248, 1536, 2950, 0 },
-    { 2, cam_ssl_pyramid_center, 0, 2500, 256, 515, 5000, 515, 0 },
-    { 3, cam_ssl_boss_room, 0, -1534, -2040, 1000, 800, 1000, 0 },
-    NULL_TRIGGER
+	NULL_TRIGGER
 };
 
 /**

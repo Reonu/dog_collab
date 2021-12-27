@@ -50,6 +50,12 @@ OSContPad gControllerPads[4];
 u8 gControllerBits;
 u8 gIsConsole = TRUE; // Needs to be initialized before audio_reset_session is called
 u8 gBorderHeight;
+// REONU VARIABLES START
+u8 gCustomCameraMode;
+u8 g2dMode;
+s32 g2dPosZ;
+s32 g2dPosX;
+s16 gForce2;
 #ifdef CUSTOM_DEBUG
 u8 gCustomDebugMode;
 #endif

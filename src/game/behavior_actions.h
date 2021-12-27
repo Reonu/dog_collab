@@ -689,6 +689,10 @@ void bhv_koopatrol_loop(void);
 void bhv_wind_sound_loop(void);
 //cheeze end
 
+//REONU START
+void bhv_2d_snapper_loop(void);
+//REONU END
+
 Gfx *geo_move_mario_part_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx);
 
 Gfx *geo_carousel_billboard(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx);

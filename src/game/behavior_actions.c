@@ -64,6 +64,7 @@
 #include "behaviors/warp.inc.c"
 #include "behaviors/white_puff_explode.inc.c"
 #include "behaviors/faz_behaviour.inc.c"
+#include "behaviors/reonu_bhvs.inc.c"
 
 // not in behavior file
 struct SpawnParticlesInfo sMistParticles = { 2, 20, MODEL_MIST, 0, 40, 5, 30, 20, 252, 30, 330.0f, 10.0f };

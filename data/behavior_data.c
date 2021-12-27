@@ -7611,3 +7611,15 @@ const BehaviorScript bhvWindSoundLoop[] = {
 };
 
 //cheeze bhvs end
+
+//REONU BHVS START
+
+const BehaviorScript bhv2dSnapper[] = {
+    BEGIN(OBJ_LIST_DEFAULT),
+    OR_INT(oFlags, (OBJ_FLAG_COMPUTE_DIST_TO_MARIO)),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_2d_snapper_loop),
+    END_LOOP(),
+};
+
+//REONU BHVS END

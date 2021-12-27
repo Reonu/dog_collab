@@ -682,5 +682,8 @@ extern const BehaviorScript bhvKoopatrol[];
 extern const BehaviorScript bhvWindSoundLoop[];
 //cheeze bhv ends
 
+//REONU BHV START
+extern const BehaviorScript bhv2dSnapper[];
+//REONU BHV END
 
 #endif // BEHAVIOR_DATA_H

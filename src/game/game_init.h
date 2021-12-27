@@ -50,6 +50,11 @@ extern struct GfxPool *gGfxPool;
 extern u8 gControllerBits;
 extern u8 gIsConsole;
 extern u8 gBorderHeight;
+extern u8 gCustomCameraMode;
+extern u8 g2dMode;
+extern s32 g2dPosZ;
+extern s32 g2dPosX;
+extern s16 gForce2;
 #ifdef CUSTOM_DEBUG
 extern u8 gCustomDebugMode;
 #endif
